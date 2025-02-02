@@ -36,6 +36,15 @@
 // app.listen(3000)
 
 
+/*
+
+--> in case of express.json() middleware, we can direct use this, we dont need to require this. 
+-----> express.json() is the newer one, under the hood, it has used body-parser only and developed itself.
+
+
+--> but in case of bodyParser.json() middleware, we are needed to require it first for us to use it. 
+
+*/
 
 
 // ****************** bodyParser.json() middleware ****************
