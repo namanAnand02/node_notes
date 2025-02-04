@@ -46,3 +46,10 @@ What Does 200 Fetch Mean?
 - The response status 200 OK confirms that the backend processed the request successfully.
 - 278 B → This indicates that 278 bytes of data were returned in the response
 */
+
+// if frontend and backend both are served on the same domain, there would be no problem of cross-origin request anyway.
+
+// to serve html file or any folder using node is ----> npx serve
+// it then serve that file on http server and gives us two link 
+// one local link and the other network link 
+// using network link, we can access the folder from the another device on same wifi 
