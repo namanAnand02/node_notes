@@ -1,0 +1,24 @@
+<head>
+  <script>
+    async function sendRequest() {
+      const response = await fetch("http://localhost:3001/sum", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // Inform the server you're sending JSON
+        },
+        body: JSON.stringify({
+          a: parseInt(document.getElementById("a").value),
+          b: parseInt(document.getElementById("b").value),
+        }),
+      });
+      const data = await response.json();
+
+      console.log(data);
+    }
+  </script>
+</head>
+<body>
+  <input type="text" id="a" placeholder="first Value" />
+  <input type="text" id="b" placeholder="second Value" />
+  <button onclick="sendRequest()">Find Sum</button>
+</body>
