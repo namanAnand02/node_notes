@@ -34,5 +34,5 @@
 
 // problem- given an input array, give back all the even values from it. 
 
-const arr = [1,2,3,4,5,6,7,8,9]
+// const arr = [1,2,3,4,5,6,7,8,9]
 
