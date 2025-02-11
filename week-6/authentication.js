@@ -60,7 +60,7 @@ app.post("/signup", (req,res)=>{
 
     // after storing the user's username and password, we tell them that they are signed in. 
     res.json({
-        message: "You are signed in"
+        message: "You are signed up."
     })
     console.log(users);
     
@@ -110,6 +110,70 @@ app.post("/signin", (req,res)=>{
 
 })
 
+// *********** creating an authenticated EP ******************
+
+app.get("/me", function(req,res){
+    // user sends us token in the headers --> server first parse that
+    const token = req.headers.token // access to user sent token
+
+    // matches this token in the users arr where we have stored the username, password and token assigned to all the user.
+    // if the token matches with any of the user's token from the user in memory variable, we will then return back the username and password of that user as output.
+
+    let foundUser = users.find(function(u){
+        return u.token == token
+
+        // find() expects the callback to return the actual object when the condition is met
+    })
+
+    if (foundUser) {
+        res.status(200).json({
+            username: foundUser.username,
+            password: foundUser.password,
+            message: "user info returned."
+        })
+
+        // cant send two responses back at user, so merged both in one (username, password and the message part)
+
+    } else{
+        res.status(401).send({
+            message: "token invalid. Unauthorized."
+        })
+    }
+
+
+    /*
+    ~~~~~~~~~~~~~~~ or we could do this matching and other stuff this way ~~~~~~~~~~~~~~
+
+
+    // const foundUser = null;
+    // for (let i = 0; i < users.length; i ++){
+    //     if (users[i].token == token){
+    //         foundUser = users[i]
+    //     }
+    // }
+
+    // // returning back the user's info to him after we matched his token and he existed in our database(in memory var here)
+
+
+    // if (foundUser){
+    //     res.json({
+    //         username: foundUser.username,
+    //         password: foundUser.password
+    //     })
+    // } else{
+    //     res.json({
+    //         message: "token invalid "
+    //     })
+    // }
+
+    */
+
+
+
+})
+
+
+
 app.listen(3000) // http server is listening on 3000 port 
 
 // the app instance has two routes at the moment - the signup and the signin routes
@@ -155,6 +219,22 @@ users = [{
 ** then we match this to the saved username and password in the users arr (in memory variable). we check for the user's existance and the password match.
 
 ** we only generate the token for them if their username and passwords are correct.
+
+
+
+
+ ******* creating an authenticated EP ****************
+
+ step 7: create an endpoint (/me) that returns the user their information only if they send their token and it matches. 
+
+ * whenever someone hit get /me endpoint, they will share their token with us in the headers
+ // headers are used very commonly for authentications
+ // we could ask user to send us token in body as well but thats wrong way of doing it. 
+ // headers are where we send the metadata info, something which works with all the endpoints. And token is one such thing which is same for all endpoints- so better be sent through headers. 
+
+ // when token is sent through headers,
+ // server need to parse this from headers, check who this user is and then return their user info
+
 
 
 */
