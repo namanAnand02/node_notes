@@ -236,5 +236,8 @@ users = [{
  // server need to parse this from headers, check who this user is and then return their user info
 
 
+ // so with this we have successfully created a real "/me" endpoint which returns me my info on being hit, just like hitting unacademy.com/courses returns me my courses.
+
+
 
 */
