@@ -80,7 +80,24 @@ app.use(express.json())
 const users = [] // acts as in memory variable 
 
 
-app.post("/signup", (req,res)=>{
+
+// MIDDLEWARE - named logger to logs which request get hit 
+function logger(req,res,next){
+
+    // we will log what method got hit 
+    console.log(`${req.method} request has been hit.`);
+    // call the next() so the request passes to the next handler
+    next()
+    
+}
+
+// we need to add this "our made middleware" as an argument (in between) inside the endpoints we want to use
+
+
+
+
+// POST "/signup" endpoint 
+app.post("/signup",logger, (req,res)=>{
 
     // 1. parse the username and body from the user - use middlware beforehand
 
@@ -108,8 +125,7 @@ app.post("/signup", (req,res)=>{
 
 
 // signin endpoint 
-
-app.post("/signin", (req,res)=>{
+app.post("/signin", logger, (req,res)=>{
 
     const username = req.body.username
     const password = req.body.password
@@ -161,7 +177,11 @@ app.post("/signin", (req,res)=>{
 })
 
 
-// /me endpoint - it first verifies the token and if it is correct, it returns back the user's username and password 
+
+
+
+// ***** Middleware and authenticated endpoints stuffs *******
+
 
 
 
@@ -171,13 +191,12 @@ app.post("/signin", (req,res)=>{
 
 
 
-
 // auth middleware task ---> 
 // 1> verify the user's jwt token 
 // 2> pass the extracted data out of the decodedInfo to the other endpoints. (modifying the request-response objects)
 // middlewares can also modify the request or response objects reaching to the next handlers
 
-const auth = function(req,res,next){
+function auth(req,res,next){
 
     // first thing is to accept the token 
     const token = req.headers.token
@@ -194,6 +213,10 @@ const auth = function(req,res,next){
         // this middleware modifies the req by adding the extracted data into it so this data can be used by other handler
 
         req.username = decodedInfo.username
+        
+        // req = {status, headers, ..... username}
+        // this middleware adds username in this req obj here so that next handlers could use this username.
+        
         
         next()
     } else{
@@ -213,29 +236,40 @@ const auth = function(req,res,next){
 
 
 
+// NOTE: we added logger middleware in this /me endpoint too.
 
-app.get("/me", auth, (req,res) => {
-
-
-    // // now we will findout the user using the extracted username
-    // const foundUser = users.find(function(u){
-    //     return u.username == req.username
-
-    //     // this will save the instance of the user from the users arr 
-
-    //     // now in next step, we need to use this foundUser to get password 
-    // })
+// first req reaches logger middleware, it loges the method, and passes the req to next handler which again is a middleware - auth middleware, it then checks the user authentication and and if the auth succeeds, it calls next() and passes the req to next main handler of /me endpoint.
 
 
+// "/me" authenicated endpoints whose task is to respond back the user their username and password
+app.get("/me", logger, auth, (req,res) => {
 
+    // 1. This defines a GET request to the /me route.
+    // 2. The auth middleware runs before this handler.
+    // 3. Once auth verifies the token, this handler gets executed.
+
+
+    // The user is authenticated (checked via the auth middleware).
+    // The user exists in memory (checked in the /me endpoint).
+
+    // finding the user from the memory using the username passed by the middleware (inside req.username) 
     let foundUser = null
 
     for(let i = 0; i < users.length; i++){
         if (users[i].username === req.username){
             foundUser = users[i]
+            break
         }
     }
 
+
+    ////  or the below .find() does the same job
+
+    ////  let foundUser = users.find(u => u.username === req.username);
+
+
+
+    // handling the response only when foundUser is not null
     if (foundUser){
     
         res.status(200).json({
@@ -243,7 +277,42 @@ app.get("/me", auth, (req,res) => {
             password: foundUser.password,
             message: "user info returned."
         })
+    } else{
+        // if no user is found in the memory, the server responds as: 
+        res.status(404).json({
+            message: "user not found"
+        })
     }
+
+
+
+    /*
+
+    --> Yes, we should still include the if (foundUser) check inside the /me endpoint, even though authentication is handled in the middleware. Here’s why:
+
+    - Middleware (auth) only verifies the token and extracts the username.
+    - It doesn’t check if the user actually exists in your users array.
+    - /me still needs to fetch the user from users and verify if they exist.
+
+    ## possible test cases can be :
+
+    - Even if a token is valid, there are cases where a user might not exist in users:
+    ✅ The user signed up, got a token, but was later deleted.
+    ✅ The token was issued for an old username that no longer exists.
+    ✅ Someone manually tampered with the token payload and changed the username.
+
+
+    conclusion: 
+    ✔-  Middleware (auth) ensures the token is valid.
+    ✔-  /me endpoint ensures the user actually exists.
+    ✔-  Prevents cases where the token is legit but the user is missing.
+
+    💡 Bottom line: Authentication checks the token, but your endpoint must still check if the user exists. ✅
+
+
+
+
+    */
 
 
 })
@@ -252,4 +321,14 @@ app.get("/me", auth, (req,res) => {
 
 
 app.listen(3000)
+
+
+
+/*
+in express, we have a chain of middlewares
+
+// another middleware that we can create is the logger middlware -----> that anytime a request comes, it should logs it on the screen so that eventually do an analysis and see which request people are hitting the most.
+
+*/
+
 
