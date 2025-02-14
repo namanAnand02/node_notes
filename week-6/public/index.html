@@ -1,0 +1,134 @@
+<html>
+  <head>
+    <title>Auth- project</title>
+    <!-- adding axios library -->
+  </head>
+
+  <!-- Want a fast, efficient website? Put your scripts before </body>! -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+  <script>
+    // singup() function
+    async function signup() {
+      const username = document.getElementById("signup-username").value;
+      const password = document.getElementById("signup-password").value;
+      // now that we have both of these values, we need to send the request to the backend.
+
+      // we can use fetch or axios for this
+      // rem they return a promise so we must await this and thus use them inside an async function
+
+      // we need to send a post request using axios so axios.post()
+      // inside it,
+      // 1. where do we need to send the request, where is our backend hosted?
+      // 2. what is the information we need to send with it i.e username and password at /signup endpoint
+
+      await axios.post("http://localhost:3000/signup", {
+        username: username,
+        password: password,
+      });
+
+      // also we will respond the user with the msg that they have signed up.
+      alert("You are signed up!");
+    }
+  </script>
+
+  <body style="background-color: blanchedalmond">
+    <!-- signup related stuffs -->
+    <div>
+      SignUp
+      <input
+        id="signup-username"
+        type="text"
+        name="Username"
+        placeholder="Username"
+      />
+      <input
+        id="signup-password"
+        type="password"
+        name="Password"
+        placeholder="Password"
+      />
+      <button onclick="signup()">Submit</button>
+    </div>
+    <br />
+
+    <!-- signin related stuffs -->
+    <div>
+      SignIn
+      <input type="text" name="Username" placeholder="Username" />
+      <input type="password" name="Password" placeholder="Password" />
+      <button onclick="signin()">Submit</button>
+    </div>
+    <br />
+
+    <!-- get your information -->
+    <div>
+      User information:
+      <div id="Information"></div>
+      <!-- we will populate this infromation section later -->
+    </div>
+    <br />
+
+    <!-- logout button -->
+    <div>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </body>
+</html>
+
+<!-- create a full stack application
+ and it should have the following: 
+ 1. signup
+ 2. signin
+ 3. Get your information
+ 4. Logout
+-->
+
+<!-- 
+Writing the onclick handlers 
+
+1. Add the axios library
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+-
+-
+-
+
+
+2. Write the signup function
+
+- first we need to extract the username and password from the input tag
+- we can do that using DOM, assign id first to them, then use getElementById(...).value()
+-
+-
+-
+
+
+3. Write the signin function
+4. Write the logout function
+5. Write the getUserInformation function
+
+
+
+
+// NEXT IMP STEP : HOST FRONTEND locally
+
+// we want to host frontend part locally too like on some endpoints (basically on a similar url like backend)
+// we will do it using backend codebase
+
+// in our backend itself, among the various other endpoints - we will add another endpoint "/", hitting which will solely run the frontend on that url 
+// i.e on get "/" endpoint, we sendFile(our frontend complete directory)
+
+// we are returning frontend also from our backend.
+// we want to host our frontend and backend from the same domain -> to avoid some complexity that comes with CORS, etc.
+
+
+// frontend hosted at "/" get endpoint so that anytime someone hits localhost:3000, backend not sends them any json but full frontend file contents to them.
+app.get("/", function(req,res){
+    res.sendFile(__dirname + "/index.html")
+
+    // __dirname -> global method to get the current directory 
+    // current directory is "C:\Users\NAMAN\Desktop\100_ cohort3\week-6"  + /index.html
+})
+
+
+
+-->
