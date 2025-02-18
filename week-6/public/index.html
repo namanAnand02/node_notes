@@ -1,13 +1,17 @@
 <html>
   <head>
     <title>Auth- project</title>
-    <!-- adding axios library -->
   </head>
 
+  <!-- adding axios library -->
   <!-- Want a fast, efficient website? Put your scripts before </body>! -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
   <script>
     // singup() function
+    // signup() --> on signup btn click, this function gets called.
+    // it has to hit signUp endpoint at the backend, and that signup endpoint needs username and password, thus we send them from here.
+    // also, we respond back the user that they signed up.
+
     async function signup() {
       const username = document.getElementById("signup-username").value;
       const password = document.getElementById("signup-password").value;
@@ -29,6 +33,64 @@
       // also we will respond the user with the msg that they have signed up.
       alert("You are signed up!");
     }
+
+    async function signin() {
+      // user sends username and password through the input box- so we access that first
+      const username = document.getElementById("signin-username").value;
+      const password = document.getElementById("signin-password").value;
+
+      // we know what /signin endpoint does - it matches the crefdentials and if it's correct, it sends user back a token
+      // so from here, we need to hit the backend of /signin endpoint using axios- we'll send the user details alongwith, and store the token response sent by them somewhere.
+
+      const response = await axios.post("http://localhost:3000/signin", {
+        username: username,
+        password: password,
+      });
+
+      // response variable has the token stored that /signin returns
+
+      // we are going to store that token into this website's localStorage
+      localStorage.setItem("token", response.data.token); // key, value
+
+      // and we also alert the user that they signed in.
+      alert("You are signed in.");
+    }
+
+    async function getUserInformation() {
+      // we hit the backend (/me endpoint) - sends the token alongside- to get user info and put it on frontend.
+      const response = await axios.get("http://localhost:3000/me", {
+        headers: {
+          token: localStorage.getItem("token"),
+        },
+      });
+      // next we want the info (it got returned by the backend) be displayd on the frontend (at User Information section)
+
+      document.getElementById(
+        "information"
+      ).innerHTML = `username is ${response.data.username}, and password is ${response.data.password}`;
+    }
+    getUserInformation();
+    //
+
+    /*
+
+    - - - - - summary of signin function - - - - - 
+    ++ signin() function --> it is to hit back at the /signin endpoint -> using axios
+    ++ /signin endpoints requires username and password that this function sends alongside in axios.
+    ++ /signin endpoint matches the details and generates the token and return to the user so that the user could use that token, next time he tries to hit any other endpoints like /me, etc.
+    ++ we need to store that token in the localStorage so that it could be used by the user next time at other endpoints.
+    ++ localStorage.setItem("token", response.data.token)
+    
+    ++ doing this wlll help token persists on the user's browser until he logs out. 
+    meaning, once he sign in and we store the token into the localStorage, this token persists long until he logs out (his session remains until he logs out). 
+    
+    ++ all we need to handle is that- whenever that user hits any other endpoints after signin, the token gets sent alongside so that he gets to benefit from those other endpoints.
+
+
+    ++ and yes, we at last alert the user that he signed in.
+
+
+    */
   </script>
 
   <body style="background-color: blanchedalmond">
@@ -54,8 +116,18 @@
     <!-- signin related stuffs -->
     <div>
       SignIn
-      <input type="text" name="Username" placeholder="Username" />
-      <input type="password" name="Password" placeholder="Password" />
+      <input
+        id="signin-username"
+        type="text"
+        name="Username"
+        placeholder="Username"
+      />
+      <input
+        id="signin-password"
+        type="password"
+        name="Password"
+        placeholder="Password"
+      />
       <button onclick="signin()">Submit</button>
     </div>
     <br />
@@ -63,7 +135,7 @@
     <!-- get your information -->
     <div>
       User information:
-      <div id="Information"></div>
+      <div id="information"></div>
       <!-- we will populate this infromation section later -->
     </div>
     <br />
@@ -94,6 +166,9 @@ Writing the onclick handlers
 
 
 2. Write the signup function
+
+- it hits the signup endpoint at the backend - sends the username and password that the user puts, and also it reponds back to the user that they signed up.
+
 
 - first we need to extract the username and password from the input tag
 - we can do that using DOM, assign id first to them, then use getElementById(...).value()

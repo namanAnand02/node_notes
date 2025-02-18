@@ -112,6 +112,10 @@ app.get("/", function(req,res){
 })
 
 
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 // POST "/signup" endpoint 
 app.post("/signup",logger, (req,res)=>{
 
@@ -167,7 +171,8 @@ app.post("/signin", logger, (req,res)=>{
             token: token
         })
 
-    }
+    } 
+    
 
 
     // 1. it again accepts the username and password from the user.
