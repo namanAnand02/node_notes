@@ -70,6 +70,10 @@
       ).innerHTML = `username is ${response.data.username}, and password is ${response.data.password}`;
     }
     getUserInformation();
+
+    function logout() {
+      localStorage.removeItem("token");
+    }
     //
 
     /*
