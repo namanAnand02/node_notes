@@ -22,7 +22,7 @@ const JWT_SECRET = "hareRamHareKrishna"
 // 4. import mongoose 
 const mongoose = require("mongoose")
 // NOTE: we must connect our mongodb databse using mongoose.connect(cluster_URL/my_database_name)
-mongoose.connect("mongodb+srv://Username:password@cluster0.6k4iz.mongodb.net/todo-naman-2277")
+mongoose.connect("mongodb+srv://anandnaman02:v9jPNDcVAXn0QXxN@cluster0.6k4iz.mongodb.net/todo-naman-2277")
 
 
 
@@ -176,7 +176,7 @@ NOTE:
 ** mongoose.connect() with our database credentials - cluster url and the name of the database 
 **** rem - if we dont have any already made database collection in our cluster or if we want to make a new database collection in our cluster- we can do that- attach that into our cluster url at the last
 
-** mongoose.connect(mongodb+srv://Username:Password@cluster0.6k4iz.mongodb.net/my_database_name)
+** mongoose.connect(mongodb+srv://anandnaman02:v9jPNDcVAXn0QXxN@cluster0.6k4iz.mongodb.net/my_database_name)
 
 */
 
@@ -287,15 +287,17 @@ app.post("/todo", authMiddleware, async (req,res)=>{
     // given this userId , how can we put a new todo at this endpoint?
 
     const title = req.body.title // user sends the title of this new todo - getting it from body
-    const desc = req.body.desc  // user also sends the desc of this new todo - getting it from body
+    const done = req.body.done  // user also sends the done status of this new todo - getting it from body
 
     await TodoModel.create({
         // we are giving the details of the todo the user wants to create
         // we trust TodoModel whose sole work is to put data from backend to the database.
 
         title: title,
-        desc: desc,
+        done: done,
         userId: userId
+
+        // the field should be similar to todo schema defined in the db.js
 
         // must add userId of the user to the Todo they are creating - it will help us identify this todo belongs to which user.
 
@@ -327,8 +329,12 @@ app.post("/todo", authMiddleware, async (req,res)=>{
 app.get("/todos", authMiddleware, async (req,res)=>{
     const userId = req.userId // authmware had put this userId inside req, so we are directly accessing it
 
-    const user = await TodoModel.find({
+    const todos = await TodoModel.find({
         userId: userId
+    })
+
+    res.json({
+        todos
     })
 
 
@@ -362,5 +368,27 @@ app.listen(3000)
 - User schema is set in db.js - where it defines email, password and name 
 - so we must ask user to give their details - email, name and password 
 (name and not username - take care of these mistakes)
+
+
+---> 3. we can also separate the auth related code parts in separate auth file just like db.js to structure our code better.
+and then exports the authMiddleware and the JWT_SECRET there bcoz we'll be using these in index.js (use after importing them using require)
+
+go to 100xdevs-cohort-3/week-7-mongo repo for complete code 
+
+
+*/
+
+
+
+/*
+~~~~~~~~~~~~ improvements ~~~~~~~~~~~~~~~~
+
+1. password is not hashed 
+2. a single crash (duplicate email) crashes the whole app
+3. add more endpoints (mark todo as done)
+4. add timestamp at which todo was created/ time it needs to be done by 
+5. relationships in mongo
+6. add validations to ensure email and password are of correct format.
+
 
 */
