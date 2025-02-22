@@ -22,7 +22,7 @@ const JWT_SECRET = "hareRamHareKrishna"
 // 4. import mongoose 
 const mongoose = require("mongoose")
 // NOTE: we must connect our mongodb databse using mongoose.connect(cluster_URL/my_database_name)
-mongoose.connect("mongodb+srv://anandnaman02:v9jPNDcVAXn0QXxN@cluster0.6k4iz.mongodb.net/todo-naman-2277")
+mongoose.connect("mongodb+srv://Username:password@cluster0.6k4iz.mongodb.net/todo-naman-2277")
 
 
 
@@ -176,7 +176,7 @@ NOTE:
 ** mongoose.connect() with our database credentials - cluster url and the name of the database 
 **** rem - if we dont have any already made database collection in our cluster or if we want to make a new database collection in our cluster- we can do that- attach that into our cluster url at the last
 
-** mongoose.connect(mongodb+srv://anandnaman02:v9jPNDcVAXn0QXxN@cluster0.6k4iz.mongodb.net/my_database_name)
+** mongoose.connect(mongodb+srv://Username:Password@cluster0.6k4iz.mongodb.net/my_database_name)
 
 */
 
