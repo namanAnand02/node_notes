@@ -149,7 +149,7 @@ app.post("/signin", async (req,res)=>{
 })
 
 
-
+ 
 /*
 so far
 
@@ -237,7 +237,7 @@ this is the whole point of database- backend may or may not crash- but data shou
 
 
 // both the below endpoint will be authenticated - only when user is logged in, can they be able to hit those.
-// at below endpoints - we first do token check (authentication) and basically use TodoModel on them as they are related to todos. 
+// at below endpoints - we first do token check (authentication) and after that we use TodoModel on them for the defined purposes like get /todos is to get all user's todos- as they are related to todos. 
 
 // to authenticate beforehand the tokens, we will use authMiddleware
 
@@ -389,6 +389,45 @@ go to 100xdevs-cohort-3/week-7-mongo repo for complete code
 4. add timestamp at which todo was created/ time it needs to be done by 
 5. relationships in mongo
 6. add validations to ensure email and password are of correct format.
+
+
+*/
+
+
+// ~~~~~~~~~~~~ Doubts sessions ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/*
+
+1. what is the difference between authentication and authorisation?
+2. what is the bearer token difference between authentication and authorisation?
+3. what is role based access and how it is handled in frontend and backend?
+----> i can access admin page, someone else can't. this is called role based access
+
+
+
+
+4. what is Refresh token, Access token?
+----> refreshes the token after a fixed time, bcoz its a bad practice to let one token stays forever.
+
+5. What is OAuth and can we create our own OAuth?
+----> https://www.linkedin.com/pulse/question-explain-oauth-me-like-im-5years-old-rachel-tomi
+
+
+6. aggregators in mongoDB for eg: group by 
+
+
+
+
+
+7. mongoDb is schema less and yet we defined schema here? 
+---> we are defining these schema bcoz we want our application to be little more strict.
+-- we can use another library - mongodb (require("mongodb")) - there, we dont need to define the schema
+-- when we use mongoose, then it asks us to define the schema
+-- but just bcoz mongoose asks us to define schema, doesn't mean our database can't be inserted with some random data - which is not defined as per schema. 
+-- kyuki mongoDb is still a NoSQL database and still schemaless- we can put random data in it- but mongoose asks us to define schema to make our application more strict.
+-- by defining the schema, we are restricting the number of errors at the node js side- so that not anything unuseful gets put in the database.
+
+-- conclusion: mongoDB is still schema less and we try to make it more strict through mongoose.
 
 
 */
