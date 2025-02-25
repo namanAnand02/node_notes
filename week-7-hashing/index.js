@@ -7,21 +7,66 @@ const { UserModel, TodoModel } = require("./db");
 const { auth, JWT_SECRET } = require("./auth");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const { z } = require("zod") 
 
-mongoose.connect("add-cluster-url/my-database-name")
+mongoose.connect("mongodb+srv://a.mongodb.net/zod-learning")
 
 const app = express();
 app.use(express.json());
 
 app.post("/signup", async function(req, res) {
+
+    // must perform input validation first thing in any routes 
+
+    // we need to validate req.body - input given by user. So first we need to define the structure we expect the user to send us data in  i.e schema of req.body
+
+    // step 1: define the schema 
+
+    const requireBody = z.object({
+        email: z.string().min(5).max(30).email().unique(),
+        password: z.string().min(5).max(50),
+        name: z.string().min(5).max(40)
+
+    })
+
+    /*
+    req.body
+    {
+        email: String,
+        password: String,
+        name: String
+
+    } 
+    */
+
+    // step 2: parsing of the data 
+
+    //// const parsedData = requireBody.parse(req.body)
+
+    const parsedDataWithSuccess = requireBody.safeParse(req.body)
+
+
+    // safeParse returns an object with three things - success, body if success, and error. it all gets stored isnide parsedDataWithSuccess. we can use them using dot notation.
+
+    if (!parsedDataWithSuccess.success){
+        res.json({
+            message: "incorrect format data",
+            // to inform the user about their mistake, we can use error that safeParse returns 
+            error: parsedDataWithSuccess.error
+        })
+        // and immediate return after this as parsing gave failure result.
+        return
+    }
+
+    // if parsing is successful, i.e user sent data in right format - then we move on to do rest of the things.
+    
     const email = req.body.email;
     const password = req.body.password;
     const name = req.body.name;
-
     // hash the password using bcrypt before saving it into database using UserModel.create({..})
     const hashedPassword = await bcrypt.hash(password,5)
     console.log(hashedPassword); // just for understanding purpose 
-
+    // $2b$05$ym.s1EaTRbx1eTBngsuK7.erh0jI44DlsrXMq
     
     // now, send this salted hashed password into the database using UserModel.create()
     await UserModel.create({
@@ -81,7 +126,7 @@ app.post("/signin", async function(req, res) {
 
         // give me the user whose email is this
         email: email,
-        //// password: password XXXXXXX
+        //// password: password  XXXX 
 
     });
 
@@ -176,3 +221,65 @@ app.get("/todos", auth, async function(req, res) {
 });
 
 app.listen(3000);
+
+
+/*
+~~~~~~ Input validation using zod ~~~~~~~~~~
+
+- in /signup endpoint, users can send us anything - we are not validating anything.
+- we expect them to give us a string in email, password and name. but user can do bodmashi, can give us any type of data - say he gave object data in email field.
+
+
+- we have created the backend- people can send any data to the backend.
+- and that could result in system shutdown
+-- ideally, we should always validate the input sent by user at the start of any route.
+
+
+- dumb way of doing that - manually write all to be failed cases 
+
+if (typeof email != String || !email.length <5 || !email.includes("@")) {
+    res.json({
+    message: "email type incorrect"
+    })
+    return 
+} 
+
+
+- easy and right way of doing input validation is through zod.
+- zod is an external library used for schema validation and parsing in typescript.
+
+
+// how to use zod in our code base 
+
+step 1: install zod library using npm install zod
+step 2: import z from zod at the top of the codebase 
+const { z } = require("zod")
+
+step 3: define schema to validate inside zod object 
+
+step 4: parsing of the data 
+
+----> parse(req.body) or safeParse(req.body) 
+
+--> safeParse is better to use as it returns an object 
+
+{
+success: true/false,
+data : (),
+error? : [desc of error]
+}
+
+
+we can even show the error to the user using safeParse 
+
+--> parse function either returns the data on success parsing or throws an error which could shut the system and we may need to use try-catch for that.
+
+
+
+NOTE : 
+
+- Zod alone can't check uniqueness because it doesn't interact with a database.
+- Use a manual database check before proceeding with validation.
+- Best practice: Perform validation first, then check uniqueness to avoid unnecessary database queries.
+
+*/
